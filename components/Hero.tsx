@@ -1,5 +1,6 @@
 "use client";
 
+import Image from "next/image";
 import { useEffect, useRef } from "react";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
@@ -10,10 +11,15 @@ gsap.registerPlugin(ScrollTrigger);
 export default function Hero() {
   const wrapperRef = useRef<HTMLDivElement>(null);
   const heroRef = useRef<HTMLElement>(null);
-  const titleRef = useRef<HTMLHeadingElement>(null);
-  const glowRef = useRef<HTMLDivElement>(null);
-  const cursorRef = useRef<HTMLDivElement>(null);
+  const imageRef = useRef<HTMLDivElement>(null);
+  const revealImageRef = useRef<HTMLDivElement>(null);
+  const cutMaskRef = useRef<HTMLDivElement>(null);
+  const cutLineRef = useRef<HTMLDivElement>(null);
+  const introRef = useRef<HTMLDivElement>(null);
+  const blueprintRef = useRef<HTMLDivElement>(null);
+  const finalRef = useRef<HTMLDivElement>(null);
   const buttonRef = useRef<HTMLButtonElement>(null);
+  const cursorRef = useRef<HTMLDivElement>(null);
 
   const scrollProgress = useRef(0);
 
@@ -28,7 +34,6 @@ export default function Hero() {
       return;
     }
 
-    // Fallback temporário caso o Booking ainda não tenha id.
     window.scrollTo({
       top: document.documentElement.scrollHeight,
       behavior: "smooth",
@@ -38,18 +43,28 @@ export default function Hero() {
   useEffect(() => {
     const wrapper = wrapperRef.current;
     const hero = heroRef.current;
-    const title = titleRef.current;
-    const glow = glowRef.current;
-    const cursor = cursorRef.current;
+    const image = imageRef.current;
+    const revealImage = revealImageRef.current;
+    const cutMask = cutMaskRef.current;
+    const cutLine = cutLineRef.current;
+    const intro = introRef.current;
+    const blueprint = blueprintRef.current;
+    const final = finalRef.current;
     const button = buttonRef.current;
+    const cursor = cursorRef.current;
 
     if (
       !wrapper ||
       !hero ||
-      !title ||
-      !glow ||
-      !cursor ||
-      !button
+      !image ||
+      !revealImage ||
+      !cutMask ||
+      !cutLine ||
+      !intro ||
+      !blueprint ||
+      !final ||
+      !button ||
+      !cursor
     ) {
       return;
     }
@@ -57,340 +72,573 @@ export default function Hero() {
     const ctx = gsap.context(() => {
       const mm = gsap.matchMedia();
 
-      // ==================================================
-      // DESKTOP
-      // ==================================================
+      const resetScene = () => {
+        gsap.set(image, {
+          scale: 1,
+          xPercent: 0,
+          yPercent: 0,
+          filter: "brightness(0.82) saturate(0.9)",
+        });
+
+        gsap.set(revealImage, {
+          scale: 1.035,
+          filter: "brightness(1.03) saturate(1.08) contrast(1.02)",
+        });
+
+        gsap.set(cutMask, {
+          clipPath: "polygon(0 0, 0 0, 0 100%, 0 100%)",
+        });
+
+        gsap.set(cutLine, {
+          opacity: 0,
+          xPercent: -100,
+        });
+
+        gsap.set(".nova-letter", {
+          x: 0,
+          y: 0,
+          rotate: 0,
+          scale: 1,
+          opacity: 1,
+        });
+
+        gsap.set(".hero-intro-copy", {
+          opacity: 1,
+          y: 0,
+        });
+
+        gsap.set(".hero-chrome", {
+          opacity: 1,
+        });
+
+        gsap.set(blueprint, {
+          opacity: 0,
+          scale: 0.98,
+        });
+
+        gsap.set(".blueprint-item", {
+          opacity: 0,
+          x: 0,
+          y: 18,
+        });
+
+        gsap.set(final, {
+          opacity: 0,
+          scale: 0.9,
+        });
+      };
 
       mm.add("(min-width: 768px)", () => {
+        resetScene();
         scrollProgress.current = 0;
-
-        gsap.set(title, {
-          opacity: 1,
-          scale: 1,
-          x: 0,
-          y: 0,
-        });
-
-        gsap.set(".hero-label", {
-          opacity: 1,
-          x: 0,
-          y: 0,
-        });
-
-        gsap.set(".hero-description", {
-          opacity: 1,
-          x: 0,
-          y: 0,
-        });
-
-        gsap.set(button, {
-          opacity: 1,
-          scale: 1,
-          x: 0,
-          y: 0,
-        });
-
-        gsap.set(".hero-ui", {
-          opacity: 1,
-        });
-
-        gsap.set(".hero-darkness", {
-          opacity: 0,
-        });
 
         const timeline = gsap.timeline({
           scrollTrigger: {
             trigger: wrapper,
             start: "top top",
-            end: "+=1800",
+            end: "+=3200",
             scrub: 1,
             pin: hero,
             pinSpacing: true,
             anticipatePin: 1,
             invalidateOnRefresh: true,
-
             onUpdate: (self) => {
               scrollProgress.current = self.progress;
             },
           },
         });
 
-        timeline.to(
-          title,
-          {
-            scale: 1.35,
-            y: -20,
-            ease: "none",
-          },
-          0
-        );
+        timeline
+          // 01 — HERO RESPIRA
+          .to(
+            image,
+            {
+              scale: 1.08,
+              xPercent: -1.2,
+              ease: "none",
+              duration: 1.1,
+            },
+            0
+          )
+          .to(
+            ".hero-intro-copy",
+            {
+              opacity: 0,
+              y: 30,
+              ease: "none",
+              duration: 0.55,
+            },
+            0.35
+          )
+          .to(
+            button,
+            {
+              opacity: 0,
+              y: 22,
+              scale: 0.94,
+              ease: "none",
+              duration: 0.5,
+            },
+            0.35
+          )
 
-        timeline.to(
-          title,
-          {
-            scale: 2.4,
-            y: -80,
-            opacity: 0,
-            ease: "none",
-          },
-          0.65
-        );
+          // 02 — LETRAS ABREM ESPAÇO PARA O CORTE
+          .to(
+            ".nova-letter-n",
+            {
+              x: "-8vw",
+              rotate: -3,
+              opacity: 0.25,
+              ease: "none",
+              duration: 0.7,
+            },
+            0.85
+          )
+          .to(
+            ".nova-letter-o",
+            {
+              x: "-3vw",
+              y: "4vh",
+              opacity: 0.18,
+              ease: "none",
+              duration: 0.7,
+            },
+            0.88
+          )
+          .to(
+            ".nova-letter-v",
+            {
+              x: "3vw",
+              y: "-4vh",
+              opacity: 0.18,
+              ease: "none",
+              duration: 0.7,
+            },
+            0.88
+          )
+          .to(
+            ".nova-letter-a",
+            {
+              x: "8vw",
+              rotate: 3,
+              opacity: 0.25,
+              ease: "none",
+              duration: 0.7,
+            },
+            0.85
+          )
 
-        timeline.to(
-          ".hero-label",
-          {
-            opacity: 0,
-            y: -80,
-            ease: "none",
-          },
-          0.15
-        );
+          // 03 — A TESOURA "CORTA" A FOTOGRAFIA
+          .to(
+            cutLine,
+            {
+              opacity: 1,
+              xPercent: 0,
+              ease: "none",
+              duration: 0.15,
+            },
+            1.3
+          )
+          .to(
+            cutMask,
+            {
+              clipPath:
+                "polygon(0 0, 64% 0, 52% 100%, 0 100%)",
+              ease: "none",
+              duration: 1.1,
+            },
+            1.32
+          )
+          .to(
+            cutLine,
+            {
+              xPercent: 185,
+              ease: "none",
+              duration: 1.1,
+            },
+            1.32
+          )
+          .to(
+            image,
+            {
+              filter: "brightness(0.38) saturate(0.55)",
+              ease: "none",
+              duration: 0.9,
+            },
+            1.48
+          )
 
-        timeline.to(
-          ".hero-description",
-          {
-            opacity: 0,
-            y: 80,
-            ease: "none",
-          },
-          0.2
-        );
+          // 04 — ANÁLISE EDITORIAL DO CORTE
+          .to(
+            ".nova-letter",
+            {
+              opacity: 0,
+              scale: 1.08,
+              ease: "none",
+              duration: 0.45,
+            },
+            2.15
+          )
+          .to(
+            ".hero-chrome",
+            {
+              opacity: 0,
+              ease: "none",
+              duration: 0.35,
+            },
+            2.15
+          )
+          .to(
+            blueprint,
+            {
+              opacity: 1,
+              scale: 1,
+              ease: "none",
+              duration: 0.5,
+            },
+            2.25
+          )
+          .to(
+            ".blueprint-item",
+            {
+              opacity: 1,
+              y: 0,
+              stagger: 0.12,
+              ease: "none",
+              duration: 0.45,
+            },
+            2.4
+          )
 
-        timeline.to(
-          button,
-          {
-            opacity: 0,
-            y: 100,
-            scale: 0.75,
-            ease: "none",
-          },
-          0.2
-        );
-
-        timeline.to(
-          ".hero-ui",
-          {
-            opacity: 0,
-            ease: "none",
-          },
-          0.25
-        );
-
-        timeline.to(
-          ".hero-darkness",
-          {
-            opacity: 1,
-            ease: "none",
-          },
-          0.75
-        );
+          // 05 — FECHA O DIAGRAMA E ENTREGA A MARCA
+          .to(
+            ".blueprint-item",
+            {
+              opacity: 0,
+              y: -16,
+              stagger: 0.07,
+              ease: "none",
+              duration: 0.35,
+            },
+            3.25
+          )
+          .to(
+            blueprint,
+            {
+              opacity: 0,
+              scale: 1.03,
+              ease: "none",
+              duration: 0.35,
+            },
+            3.35
+          )
+          .to(
+            cutMask,
+            {
+              clipPath:
+                "polygon(0 0, 100% 0, 100% 100%, 0 100%)",
+              ease: "none",
+              duration: 0.5,
+            },
+            3.45
+          )
+          .to(
+            revealImage,
+            {
+              scale: 1.13,
+              filter: "brightness(0.22) saturate(0.5)",
+              ease: "none",
+              duration: 0.75,
+            },
+            3.45
+          )
+          .to(
+            final,
+            {
+              opacity: 1,
+              scale: 1,
+              ease: "power2.out",
+              duration: 0.55,
+            },
+            3.72
+          );
       });
 
-      // ==================================================
-      // MOBILE
-      // Mantém NØVA + tesoura sincronizados
-      // ==================================================
-
       mm.add("(max-width: 767px)", () => {
+        resetScene();
         scrollProgress.current = 0;
-
-        gsap.set(title, {
-          opacity: 1,
-          scale: 1,
-          x: 0,
-          y: 0,
-        });
-
-        gsap.set(".hero-label", {
-          opacity: 1,
-          x: 0,
-          y: 0,
-        });
-
-        gsap.set(".hero-description", {
-          opacity: 1,
-          x: 0,
-          y: 0,
-        });
-
-        gsap.set(button, {
-          opacity: 1,
-          scale: 1,
-          x: 0,
-          y: 0,
-        });
-
-        gsap.set(".hero-ui", {
-          opacity: 1,
-        });
-
-        gsap.set(".hero-darkness", {
-          opacity: 0,
-        });
 
         const timeline = gsap.timeline({
           scrollTrigger: {
             trigger: wrapper,
             start: "top top",
-            end: "+=950",
+            end: "+=1900",
             scrub: 0.75,
             pin: hero,
             pinSpacing: true,
             anticipatePin: 1,
             invalidateOnRefresh: true,
-
             onUpdate: (self) => {
               scrollProgress.current = self.progress;
             },
           },
         });
 
-        timeline.to(
-          title,
-          {
-            scale: 1.18,
-            y: -8,
-            ease: "none",
-          },
-          0
-        );
-
-        timeline.to(
-          title,
-          {
-            scale: 1.8,
-            y: -42,
-            opacity: 0,
-            ease: "none",
-          },
-          0.6
-        );
-
-        timeline.to(
-          ".hero-label",
-          {
-            opacity: 0,
-            y: -35,
-            ease: "none",
-          },
-          0.12
-        );
-
-        timeline.to(
-          ".hero-description",
-          {
-            opacity: 0,
-            y: 35,
-            ease: "none",
-          },
-          0.18
-        );
-
-        timeline.to(
-          button,
-          {
-            opacity: 0,
-            y: 45,
-            scale: 0.88,
-            ease: "none",
-          },
-          0.2
-        );
-
-        timeline.to(
-          ".hero-ui",
-          {
-            opacity: 0,
-            ease: "none",
-          },
-          0.24
-        );
-
-        timeline.to(
-          ".hero-darkness",
-          {
-            opacity: 1,
-            ease: "none",
-          },
-          0.75
-        );
+        timeline
+          .to(
+            image,
+            {
+              scale: 1.07,
+              yPercent: -1.5,
+              ease: "none",
+              duration: 1,
+            },
+            0
+          )
+          .to(
+            ".hero-intro-copy",
+            {
+              opacity: 0,
+              y: 18,
+              ease: "none",
+              duration: 0.45,
+            },
+            0.3
+          )
+          .to(
+            ".nova-letter-n",
+            {
+              x: "-15vw",
+              opacity: 0.22,
+              ease: "none",
+              duration: 0.6,
+            },
+            0.78
+          )
+          .to(
+            ".nova-letter-o",
+            {
+              x: "-5vw",
+              y: "3vh",
+              opacity: 0.18,
+              ease: "none",
+              duration: 0.6,
+            },
+            0.8
+          )
+          .to(
+            ".nova-letter-v",
+            {
+              x: "5vw",
+              y: "-3vh",
+              opacity: 0.18,
+              ease: "none",
+              duration: 0.6,
+            },
+            0.8
+          )
+          .to(
+            ".nova-letter-a",
+            {
+              x: "15vw",
+              opacity: 0.22,
+              ease: "none",
+              duration: 0.6,
+            },
+            0.78
+          )
+          .to(
+            cutLine,
+            {
+              opacity: 1,
+              xPercent: 0,
+              ease: "none",
+              duration: 0.12,
+            },
+            1.18
+          )
+          .to(
+            cutMask,
+            {
+              clipPath:
+                "polygon(0 0, 100% 0, 100% 56%, 0 72%)",
+              ease: "none",
+              duration: 0.9,
+            },
+            1.2
+          )
+          .to(
+            cutLine,
+            {
+              yPercent: 180,
+              xPercent: 30,
+              ease: "none",
+              duration: 0.9,
+            },
+            1.2
+          )
+          .to(
+            image,
+            {
+              filter: "brightness(0.35) saturate(0.5)",
+              ease: "none",
+              duration: 0.8,
+            },
+            1.35
+          )
+          .to(
+            ".nova-letter",
+            {
+              opacity: 0,
+              ease: "none",
+              duration: 0.35,
+            },
+            1.95
+          )
+          .to(
+            ".hero-chrome",
+            {
+              opacity: 0,
+              ease: "none",
+              duration: 0.3,
+            },
+            1.95
+          )
+          .to(
+            blueprint,
+            {
+              opacity: 1,
+              scale: 1,
+              ease: "none",
+              duration: 0.45,
+            },
+            2.02
+          )
+          .to(
+            ".blueprint-item",
+            {
+              opacity: 1,
+              y: 0,
+              stagger: 0.1,
+              ease: "none",
+              duration: 0.35,
+            },
+            2.12
+          )
+          .to(
+            ".blueprint-item",
+            {
+              opacity: 0,
+              y: -10,
+              stagger: 0.05,
+              ease: "none",
+              duration: 0.3,
+            },
+            2.95
+          )
+          .to(
+            blueprint,
+            {
+              opacity: 0,
+              ease: "none",
+              duration: 0.3,
+            },
+            3.02
+          )
+          .to(
+            cutMask,
+            {
+              clipPath:
+                "polygon(0 0, 100% 0, 100% 100%, 0 100%)",
+              ease: "none",
+              duration: 0.45,
+            },
+            3.08
+          )
+          .to(
+            revealImage,
+            {
+              scale: 1.12,
+              filter: "brightness(0.2) saturate(0.45)",
+              ease: "none",
+              duration: 0.65,
+            },
+            3.08
+          )
+          .to(
+            final,
+            {
+              opacity: 1,
+              scale: 1,
+              ease: "power2.out",
+              duration: 0.5,
+            },
+            3.3
+          );
       });
     }, wrapper);
 
-    // ==================================================
-    // MOUSE — SOMENTE DESKTOP
-    // ==================================================
+    const finePointer = window.matchMedia("(pointer: fine)").matches;
 
-    const hasFinePointer = window.matchMedia(
-      "(pointer: fine)"
-    ).matches;
+    let handleMouseMove: ((event: MouseEvent) => void) | null = null;
+    let handleButtonMove: ((event: MouseEvent) => void) | null = null;
+    let handleButtonLeave: (() => void) | null = null;
 
-    let handleMouseMove:
-      | ((event: MouseEvent) => void)
-      | null = null;
-
-    let handleButtonMove:
-      | ((event: MouseEvent) => void)
-      | null = null;
-
-    let handleButtonLeave:
-      | (() => void)
-      | null = null;
-
-    if (hasFinePointer) {
-      const moveGlowX = gsap.quickTo(glow, "x", {
-        duration: 0.8,
-        ease: "power3.out",
-      });
-
-      const moveGlowY = gsap.quickTo(glow, "y", {
-        duration: 0.8,
-        ease: "power3.out",
-      });
-
+    if (finePointer) {
       const moveCursorX = gsap.quickTo(cursor, "x", {
-        duration: 0.18,
+        duration: 0.16,
         ease: "power3.out",
       });
 
       const moveCursorY = gsap.quickTo(cursor, "y", {
-        duration: 0.18,
+        duration: 0.16,
+        ease: "power3.out",
+      });
+
+      const moveImageX = gsap.quickTo(image, "x", {
+        duration: 1.25,
+        ease: "power3.out",
+      });
+
+      const moveImageY = gsap.quickTo(image, "y", {
+        duration: 1.25,
         ease: "power3.out",
       });
 
       handleMouseMove = (event: MouseEvent) => {
         const rect = hero.getBoundingClientRect();
+        const localX = event.clientX - rect.left;
+        const localY = event.clientY - rect.top;
 
-        moveGlowX(event.clientX - rect.left);
-        moveGlowY(event.clientY - rect.top);
+        const normalizedX = localX / rect.width - 0.5;
+        const normalizedY = localY / rect.height - 0.5;
 
         moveCursorX(event.clientX);
         moveCursorY(event.clientY);
+
+        moveImageX(normalizedX * -7);
+        moveImageY(normalizedY * -5);
       };
 
       handleButtonMove = (event: MouseEvent) => {
         const rect = button.getBoundingClientRect();
 
         const x =
-          event.clientX -
-          rect.left -
-          rect.width / 2;
+          event.clientX - rect.left - rect.width / 2;
 
         const y =
-          event.clientY -
-          rect.top -
-          rect.height / 2;
+          event.clientY - rect.top - rect.height / 2;
 
         gsap.to(button, {
-          x: x * 0.25,
-          y: y * 0.25,
+          x: x * 0.2,
+          y: y * 0.2,
           duration: 0.3,
           ease: "power3.out",
         });
 
         gsap.to(cursor, {
           scale: 2.5,
-          duration: 0.3,
+          duration: 0.2,
         });
       };
 
@@ -398,60 +646,39 @@ export default function Hero() {
         gsap.to(button, {
           x: 0,
           y: 0,
-          duration: 0.5,
+          duration: 0.45,
           ease: "power3.out",
         });
 
         gsap.to(cursor, {
           scale: 1,
-          duration: 0.3,
+          duration: 0.2,
         });
       };
 
-      window.addEventListener(
-        "mousemove",
-        handleMouseMove
-      );
-
-      button.addEventListener(
-        "mousemove",
-        handleButtonMove
-      );
-
-      button.addEventListener(
-        "mouseleave",
-        handleButtonLeave
-      );
+      window.addEventListener("mousemove", handleMouseMove);
+      button.addEventListener("mousemove", handleButtonMove);
+      button.addEventListener("mouseleave", handleButtonLeave);
     }
 
     const refreshTimer = window.setTimeout(() => {
       ScrollTrigger.refresh();
-    }, 250);
+    }, 350);
 
     return () => {
       window.clearTimeout(refreshTimer);
-
       ctx.revert();
 
       if (handleMouseMove) {
-        window.removeEventListener(
-          "mousemove",
-          handleMouseMove
-        );
+        window.removeEventListener("mousemove", handleMouseMove);
       }
 
       if (handleButtonMove) {
-        button.removeEventListener(
-          "mousemove",
-          handleButtonMove
-        );
+        button.removeEventListener("mousemove", handleButtonMove);
       }
 
       if (handleButtonLeave) {
-        button.removeEventListener(
-          "mouseleave",
-          handleButtonLeave
-        );
+        button.removeEventListener("mouseleave", handleButtonLeave);
       }
     };
   }, []);
@@ -459,470 +686,263 @@ export default function Hero() {
   return (
     <div
       ref={wrapperRef}
-      className="
-        relative
-        w-full
-        max-w-full
-        overflow-x-clip
-        bg-[#050505]
-      "
+      className="relative w-full max-w-full overflow-x-clip bg-[#050505]"
     >
       <section
         ref={heroRef}
         id="home"
-        className="
-          relative
-          flex
-          h-[100svh]
-          min-h-[600px]
-          w-full
-          max-w-full
-          items-center
-          justify-center
-          overflow-hidden
-          bg-[#050505]
-          text-white
-
-          md:h-screen
-          md:min-h-[650px]
-        "
-        style={{
-          perspective: "1200px",
-        }}
+        className="relative h-[100svh] min-h-[620px] w-full overflow-hidden bg-[#050505] text-white md:h-screen md:min-h-[680px]"
       >
-        {/* 3D — NÃO ALTERADO */}
-
-        <BarberScene
-          scrollProgress={scrollProgress}
-        />
-
-        {/* GRID */}
-
+        {/* FOTO BASE */}
         <div
-          className="
-            pointer-events-none
-            absolute
-            inset-0
-            z-[2]
-            opacity-[0.045]
-
-            md:opacity-[0.075]
-          "
-          style={{
-            backgroundImage: `
-              linear-gradient(
-                rgba(255,255,255,0.08) 1px,
-                transparent 1px
-              ),
-              linear-gradient(
-                90deg,
-                rgba(255,255,255,0.08) 1px,
-                transparent 1px
-              )
-            `,
-            backgroundSize: "70px 70px",
-
-            maskImage:
-              "radial-gradient(circle at center, black, transparent 75%)",
-          }}
-        />
-
-        {/* GLOW */}
-
-        <div
-          ref={glowRef}
-          className="
-            pointer-events-none
-            absolute
-            left-1/2
-            top-[43%]
-            z-[2]
-
-            h-[280px]
-            w-[280px]
-
-            -translate-x-1/2
-            -translate-y-1/2
-
-            rounded-full
-            bg-white/[0.04]
-            blur-[90px]
-
-            min-[390px]:h-[340px]
-            min-[390px]:w-[340px]
-
-            md:left-[-300px]
-            md:top-[-300px]
-            md:h-[600px]
-            md:w-[600px]
-            md:translate-x-0
-            md:translate-y-0
-            md:bg-white/[0.08]
-            md:blur-[120px]
-          "
-        />
-
-        {/* TOPO */}
-
-        <div
-          className="
-            hero-ui
-            absolute
-            left-5
-            top-5
-            z-30
-
-            text-[8px]
-            font-medium
-            tracking-[0.2em]
-            text-white/50
-
-            min-[390px]:left-6
-            min-[390px]:top-6
-
-            md:left-8
-            md:top-8
-            md:text-[9px]
-            md:tracking-[0.3em]
-          "
+          ref={imageRef}
+          className="absolute inset-[-10px] z-0 will-change-transform"
         >
-          NØVA / BARBER CLUB
+          <picture className="absolute inset-0 block">
+            <source
+              media="(max-width: 767px)"
+              srcSet="/images/hero-barber-mobile.png"
+            />
+
+            <Image
+              src="/images/hero-barber-v2.png"
+              alt="Barbeiro realizando um corte na NØVA Barber Club"
+              fill
+              priority
+              sizes="100vw"
+              className="object-cover object-center"
+            />
+          </picture>
         </div>
 
-        <div
-          className="
-            hero-ui
-            absolute
-            right-5
-            top-5
-            z-30
+        {/* TRATAMENTO CINEMATOGRÁFICO */}
+        <div className="pointer-events-none absolute inset-0 z-[1] bg-gradient-to-r from-black/75 via-black/15 to-black/25 md:from-black/60 md:via-transparent md:to-black/20" />
 
-            text-[8px]
-            tracking-[0.18em]
-            text-white/40
+        <div className="pointer-events-none absolute inset-0 z-[1] bg-gradient-to-t from-black/80 via-transparent to-black/55" />
 
-            min-[390px]:right-6
-            min-[390px]:top-6
-
-            md:right-8
-            md:top-8
-            md:text-[9px]
-            md:tracking-[0.3em]
-          "
-        >
-          SÃO PAULO
-        </div>
-
-        {/* CONTEÚDO */}
-
-        <div
-          className="
-            relative
-            z-20
-            flex
-            w-full
-            min-w-0
-            max-w-full
-            flex-col
-            items-center
-            px-5
-            text-center
-
-            min-[390px]:px-6
-          "
-        >
-          <span
-            className="
-              hero-label
-              mb-5
-              whitespace-nowrap
-
-              text-[8px]
-              font-medium
-              tracking-[0.25em]
-              text-white/55
-
-              min-[390px]:text-[9px]
-
-              md:mb-7
-              md:text-[10px]
-              md:tracking-[0.4em]
-            "
+        {/* NØVA ATRÁS DA AÇÃO */}
+        <div className="pointer-events-none absolute inset-0 z-[4] flex items-center justify-center overflow-hidden">
+          <h1
+            aria-label="NØVA"
+            className="-translate-y-[7vh] flex select-none items-center justify-center text-[22vw] font-black leading-[0.78] tracking-[-0.105em] text-white/[0.20] mix-blend-screen md:translate-y-0 md:text-[17vw] md:text-white/[0.19]"
           >
-            BARBEARIA CONTEMPORÂNEA · SÃO PAULO
-          </span>
-
-          {/* NØVA — CONTINUA SENDO O IMPACTO PRINCIPAL */}
-
-          <div
-            className="
-              flex
-              w-full
-              min-w-0
-              max-w-full
-              items-center
-              justify-center
-              overflow-visible
-              py-5
-
-              md:py-8
-            "
-          >
-            <h1
-              ref={titleRef}
-              className="
-                hero-title
-
-                select-none
-                whitespace-nowrap
-
-                text-[22vw]
-                font-black
-                leading-[0.72]
-                tracking-[-0.09em]
-
-                opacity-100
-
-                min-[390px]:text-[21vw]
-
-                sm:text-[20vw]
-
-                md:text-[18vw]
-                md:leading-[0.65]
-              "
-              style={{
-                transformStyle: "preserve-3d",
-                willChange: "transform, opacity",
-              }}
-            >
-              NØVA
-            </h1>
-          </div>
-
-          {/* TEXTO MAIS HUMANO */}
-
-          <div
-            className="
-              hero-description
-              mt-5
-              flex
-              max-w-[290px]
-              flex-col
-              items-center
-              gap-2
-
-              sm:max-w-[360px]
-
-              md:mt-8
-              md:max-w-[470px]
-            "
-          >
-            <p
-              className="
-                text-[10px]
-                font-medium
-                uppercase
-                tracking-[0.18em]
-                text-white/70
-
-                md:text-[11px]
-                md:tracking-[0.22em]
-              "
-            >
-              Precisão em cada corte. Estilo em cada detalhe.
-            </p>
-
-            <p
-              className="
-                text-[11px]
-                leading-relaxed
-                text-white/40
-
-                md:text-[12px]
-              "
-            >
-              Uma experiência pensada para valorizar
-              seu estilo, com técnica, cuidado e atenção
-              a cada detalhe.
-            </p>
-          </div>
-
-          {/* CTA FUNCIONAL */}
-
-          <button
-            ref={buttonRef}
-            type="button"
-            onClick={goToBooking}
-            aria-label="Ir para o agendamento"
-            className="
-              group
-              mt-8
-
-              flex
-              min-h-[48px]
-              items-center
-              justify-center
-              gap-4
-
-              rounded-full
-
-              border
-              border-white/30
-
-              bg-white/[0.04]
-
-              px-7
-              py-3
-
-              text-[9px]
-              font-medium
-              tracking-[0.18em]
-
-              backdrop-blur-md
-
-              transition-colors
-              duration-300
-
-              active:bg-white
-              active:text-black
-
-              md:mt-9
-              md:min-h-[50px]
-              md:px-9
-              md:text-[10px]
-              md:hover:bg-white
-              md:hover:text-black
-            "
-          >
-            AGENDAR HORÁRIO
-
-            <span
-              aria-hidden="true"
-              className="
-                text-sm
-                transition-transform
-                duration-300
-
-                group-active:translate-x-1
-                md:group-hover:translate-x-1
-              "
-            >
-              ↗
+            <span className="nova-letter nova-letter-n inline-block will-change-transform">
+              N
             </span>
-          </button>
+            <span className="nova-letter nova-letter-o inline-block will-change-transform">
+              Ø
+            </span>
+            <span className="nova-letter nova-letter-v inline-block will-change-transform">
+              V
+            </span>
+            <span className="nova-letter nova-letter-a inline-block will-change-transform">
+              A
+            </span>
+          </h1>
         </div>
 
-        {/* RODAPÉ */}
-
+        {/* SEGUNDA CÓPIA DA FOTO:
+            A MÁSCARA DESTA CAMADA É CONTROLADA PELO SCROLL.
+            É ISSO QUE CRIA O "CORTE" VISUAL. */}
         <div
-          className="
-            hero-ui
-
-            absolute
-            bottom-5
-            left-5
-            z-30
-
-            text-[8px]
-            tracking-[0.18em]
-            text-white/35
-
-            min-[390px]:left-6
-
-            md:bottom-8
-            md:left-8
-            md:text-[9px]
-            md:tracking-[0.25em]
-          "
+          ref={cutMaskRef}
+          className="pointer-events-none absolute inset-0 z-[8] overflow-hidden will-change-[clip-path]"
         >
-          01 / INÍCIO
+          <div
+            ref={revealImageRef}
+            className="absolute inset-[-10px] will-change-transform"
+          >
+            <picture className="absolute inset-0 block">
+              <source
+                media="(max-width: 767px)"
+                srcSet="/images/hero-barber-mobile.png"
+              />
+
+              <Image
+                src="/images/hero-barber-v2.png"
+                alt=""
+                aria-hidden="true"
+                fill
+                sizes="100vw"
+                className="object-cover object-center"
+              />
+            </picture>
+          </div>
+
+          <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/[0.025] to-white/[0.055]" />
         </div>
 
+        {/* LINHA DO CORTE */}
         <div
-          className="
-            hero-ui
-
-            absolute
-            bottom-5
-            left-1/2
-            z-30
-
-            -translate-x-1/2
-            whitespace-nowrap
-
-            text-[8px]
-            tracking-[0.14em]
-            text-white/35
-
-            md:bottom-8
-            md:text-[9px]
-            md:tracking-[0.25em]
-          "
-        >
-          ROLE PARA EXPLORAR
-        </div>
-
-        <div
-          className="
-            hero-ui
-
-            absolute
-            bottom-8
-            right-8
-            z-30
-
-            hidden
-
-            text-[9px]
-            tracking-[0.25em]
-            text-white/30
-
-            md:block
-          "
-        >
-          CORTE · BARBA · ESTILO
-        </div>
-
-        {/* ESCURECIMENTO DO SCROLL */}
-
-        <div
-          className="
-            hero-darkness
-
-            pointer-events-none
-            absolute
-            inset-0
-            z-40
-
-            bg-black
-            opacity-0
-          "
+          ref={cutLineRef}
+          className="pointer-events-none absolute left-[-35%] top-1/2 z-[18] h-px w-[165%] -translate-y-1/2 -rotate-[9deg] bg-gradient-to-r from-transparent via-white/90 to-transparent opacity-0 shadow-[0_0_24px_rgba(255,255,255,0.8)] md:left-[-25%] md:w-[150%] md:-rotate-[17deg]"
         />
 
-        {/* CURSOR DESKTOP */}
+        {/* TESOURA 3D */}
+        <BarberScene scrollProgress={scrollProgress} />
 
+        {/* TOPO MINIMALISTA */}
+        <div className="hero-chrome absolute left-5 top-5 z-30 text-[9px] font-semibold tracking-[0.28em] text-white/85 min-[390px]:left-6 min-[390px]:top-6 md:left-8 md:top-8 md:text-[10px]">
+          NØVA
+        </div>
+
+        <div className="hero-chrome absolute right-5 top-5 z-30 text-[8px] tracking-[0.22em] text-white/55 min-[390px]:right-6 min-[390px]:top-6 md:right-8 md:top-8 md:text-[9px]">
+          FUTURE BARBER CLUB
+        </div>
+
+        {/* COPY INICIAL */}
+        <div
+          ref={introRef}
+          className="hero-intro-copy absolute bottom-[92px] left-5 z-30 max-w-[270px] min-[390px]:left-6 md:bottom-[88px] md:left-8 md:max-w-[390px]"
+        >
+          <div className="mb-4 flex items-center gap-3">
+            <span className="h-px w-8 bg-white/55" />
+
+            <span className="text-[8px] uppercase tracking-[0.3em] text-white/60 md:text-[9px]">
+              PRECISION IN MOTION
+            </span>
+          </div>
+
+          <p className="text-[18px] font-medium leading-[1.16] tracking-[-0.02em] text-white/95 md:text-[26px]">
+            O corte não acompanha
+            <br />
+            seu estilo.
+            <br />
+            <span className="text-white/55">
+              Ele define.
+            </span>
+          </p>
+        </div>
+
+        {/* CTA DESKTOP */}
+        <button
+          ref={buttonRef}
+          type="button"
+          onClick={goToBooking}
+          className="group absolute bottom-[88px] right-8 z-30 hidden h-[58px] items-center gap-6 rounded-full border border-white/30 bg-black/15 px-8 text-[9px] font-medium tracking-[0.22em] backdrop-blur-md transition-colors duration-300 hover:bg-white hover:text-black md:flex"
+        >
+          AGENDAR HORÁRIO
+
+          <span
+            aria-hidden="true"
+            className="text-sm transition-transform duration-300 group-hover:translate-x-1 group-hover:-translate-y-1"
+          >
+            ↗
+          </span>
+        </button>
+
+        {/* CTA MOBILE */}
+        <button
+          type="button"
+          onClick={goToBooking}
+          className="hero-intro-copy absolute bottom-[42px] right-5 z-30 text-[8px] font-medium tracking-[0.2em] text-white/80 md:hidden"
+        >
+          AGENDAR ↗
+        </button>
+
+        {/* INSTRUÇÃO */}
+        <div className="hero-chrome absolute bottom-5 left-1/2 z-30 -translate-x-1/2 whitespace-nowrap text-[7px] tracking-[0.22em] text-white/45 md:bottom-8 md:text-[8px]">
+          ROLE PARA REALIZAR O CORTE ↓
+        </div>
+
+        {/* BLUEPRINT / EXPLODED VIEW */}
+        <div
+          ref={blueprintRef}
+          className="pointer-events-none absolute inset-0 z-[24] flex items-center justify-center opacity-0"
+        >
+          <div className="absolute inset-0 bg-black/45 backdrop-blur-[1px]" />
+
+          <div className="relative h-[72%] w-[88%] max-w-[1250px] md:h-[78%]">
+            <div className="absolute left-0 top-0 text-[7px] tracking-[0.32em] text-white/40 md:text-[9px]">
+              NØVA / CUT ANALYSIS
+            </div>
+
+            <div className="absolute right-0 top-0 text-[7px] tracking-[0.25em] text-white/35 md:text-[9px]">
+              01 — 04
+            </div>
+
+            <div className="blueprint-item absolute left-[4%] top-[18%] md:left-[8%] md:top-[20%]">
+              <p className="text-[7px] tracking-[0.28em] text-white/45 md:text-[9px]">
+                01
+              </p>
+
+              <p className="mt-1 text-[16px] font-semibold tracking-[-0.03em] md:text-[24px]">
+                TEXTURA
+              </p>
+
+              <div className="mt-2 h-px w-[28vw] max-w-[300px] bg-gradient-to-r from-white/65 to-transparent" />
+            </div>
+
+            <div className="blueprint-item absolute right-[3%] top-[35%] text-right md:right-[7%]">
+              <p className="text-[7px] tracking-[0.28em] text-white/45 md:text-[9px]">
+                02
+              </p>
+
+              <p className="mt-1 text-[16px] font-semibold tracking-[-0.03em] md:text-[24px]">
+                FADE
+              </p>
+
+              <div className="ml-auto mt-2 h-px w-[30vw] max-w-[330px] bg-gradient-to-l from-white/65 to-transparent" />
+            </div>
+
+            <div className="blueprint-item absolute left-[7%] top-[58%] md:left-[12%]">
+              <p className="text-[7px] tracking-[0.28em] text-white/45 md:text-[9px]">
+                03
+              </p>
+
+              <p className="mt-1 text-[16px] font-semibold tracking-[-0.03em] md:text-[24px]">
+                CONTORNO
+              </p>
+
+              <div className="mt-2 h-px w-[25vw] max-w-[270px] bg-gradient-to-r from-white/65 to-transparent" />
+            </div>
+
+            <div className="blueprint-item absolute bottom-[5%] right-[4%] text-right md:bottom-[8%] md:right-[11%]">
+              <p className="text-[7px] tracking-[0.28em] text-white/45 md:text-[9px]">
+                04
+              </p>
+
+              <p className="mt-1 text-[16px] font-semibold tracking-[-0.03em] md:text-[24px]">
+                FINALIZAÇÃO
+              </p>
+
+              <div className="ml-auto mt-2 h-px w-[27vw] max-w-[290px] bg-gradient-to-l from-white/65 to-transparent" />
+            </div>
+
+            <div className="absolute bottom-0 left-0 text-[7px] leading-relaxed tracking-[0.18em] text-white/35 md:text-[8px]">
+              CADA LINHA.
+              <br />
+              CADA ÂNGULO.
+              <br />
+              CADA DETALHE.
+            </div>
+          </div>
+        </div>
+
+        {/* FINAL DA EXPERIÊNCIA */}
+        <div
+          ref={finalRef}
+          className="pointer-events-none absolute inset-0 z-[26] flex items-center justify-center opacity-0"
+        >
+          <div className="absolute inset-0 bg-black/55" />
+
+          <div className="relative text-center">
+            <p className="mb-4 text-[7px] tracking-[0.4em] text-white/45 md:text-[9px]">
+              PRECISION / IDENTITY / PRESENCE
+            </p>
+
+            <p className="text-[12vw] font-black leading-[0.82] tracking-[-0.08em] text-white md:text-[8vw]">
+              THIS IS
+              <br />
+              NØVA.
+            </p>
+          </div>
+        </div>
+
+        {/* CURSOR CUSTOMIZADO */}
         <div
           ref={cursorRef}
-          className="
-            pointer-events-none
-
-            fixed
-            left-[-6px]
-            top-[-6px]
-            z-50
-
-            hidden
-
-            h-3
-            w-3
-
-            rounded-full
-            bg-white
-
-            mix-blend-difference
-
-            md:block
-          "
+          className="pointer-events-none fixed left-[-6px] top-[-6px] z-50 hidden h-3 w-3 rounded-full bg-white mix-blend-difference md:block"
         />
       </section>
     </div>
